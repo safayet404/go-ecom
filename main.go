@@ -27,12 +27,6 @@ type Product struct {
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
-	if r.Method != http.MethodGet {
-		http.Error(w, "Please give me GET request", 400)
-
-		return
-	}
-
 	sendData(w, productList, 200)
 
 }
@@ -61,11 +55,7 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 
 func createProduct(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
-	if r.Method != "POST" {
-		http.Error(w, "Please give me POST request", 400)
 
-		return
-	}
 	var newProduct Product
 
 	decoder := json.NewDecoder(r.Body)
@@ -86,11 +76,10 @@ func createProduct(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", helloHandler)
-	mux.HandleFunc("/about", aboutHadnler)
-	mux.HandleFunc("/products", getProducts)
-	mux.HandleFunc("/create-products", createProduct)
-
+	mux.Handle("GET /", http.HandlerFunc(helloHandler))
+	mux.Handle("GET /about", http.HandlerFunc(aboutHadnler))
+	mux.Handle("GET /products", http.HandlerFunc(getProducts))
+	mux.Handle("POST /create-products", http.HandlerFunc(createProduct))
 	fmt.Println("Server running on Server : 3000")
 
 	err := http.ListenAndServe(":3000", mux)
