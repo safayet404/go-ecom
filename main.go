@@ -33,20 +33,6 @@ func getProducts(w http.ResponseWriter, r *http.Request) {
 
 var productList []Product
 
-func handleCors(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,PATHC,DELETE,OPTIONS,POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-}
-
-func handlePreFlighReq(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(200)
-
-	}
-}
-
 func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.WriteHeader(statusCode)
 	encoder := json.NewEncoder(w)
@@ -54,7 +40,6 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 }
 
 func createProduct(w http.ResponseWriter, r *http.Request) {
-	handleCors(w)
 
 	var newProduct Product
 
@@ -76,9 +61,7 @@ func createProduct(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /", http.HandlerFunc(helloHandler))
-	mux.Handle("GET /about", http.HandlerFunc(aboutHadnler))
-	mux.Handle("GET /products", corsMiddleware(http.HandlerFunc(getProducts)))
+	mux.Handle("GET /products", http.HandlerFunc(getProducts))
 	mux.Handle("POST /create-products", http.HandlerFunc(createProduct))
 	fmt.Println("Server running on Server : 3000")
 
@@ -139,15 +122,15 @@ func corsMiddleware(next http.Handler) http.Handler {
 func globalRouter(mux *http.ServeMux) http.Handler {
 
 	handleAllReq := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,PATCH,DELETE,OPTIONS,POST")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Content-Type", "application/json")
 		if r.Method == "OPTIONS" {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,PATCH,DELETE,OPTIONS,POST")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(200)
-		} else {
-			mux.ServeHTTP(w, r)
+			return
 		}
+		mux.ServeHTTP(w, r)
 	}
 
 	return http.HandlerFunc(handleAllReq)
