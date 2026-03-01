@@ -21,6 +21,6 @@ func Serve() {
 	err := http.ListenAndServe(":3000", globalRouter)
 
 	if err != nil {
-		fmt.Println("error in staring the server", err)
+		fmt.Println("error in staring the server,try again", err)
 	}
 }
