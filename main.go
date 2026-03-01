@@ -26,6 +26,8 @@ type Product struct {
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method != http.MethodGet {
 		http.Error(w, "Please give me GET request", 400)
 
