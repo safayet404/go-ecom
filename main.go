@@ -18,28 +18,70 @@ func aboutHadnler(w http.ResponseWriter, r *http.Request) {
 }
 
 type Product struct {
-	ID          int
-	Title       string
-	Description string
-	Price       float64
-	ImgUrl      string
+	ID          int     `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImgUrl      string  `json:"imageUrl"`
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
+	handleCors(w)
 	if r.Method != http.MethodGet {
 		http.Error(w, "Please give me GET request", 400)
 
 		return
 	}
 
-	encoder := json.NewEncoder(w)
-	encoder.Encode(productList)
+	sendData(w, productList, 200)
 
 }
 
 var productList []Product
+
+func handleCors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,PATHC,DELETE,OPTIONS,POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func handlePreFlighReq(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+
+	}
+}
+
+func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
+	w.WriteHeader(statusCode)
+	encoder := json.NewEncoder(w)
+	encoder.Encode(data)
+}
+
+func createProduct(w http.ResponseWriter, r *http.Request) {
+	handleCors(w)
+	if r.Method != "POST" {
+		http.Error(w, "Please give me POST request", 400)
+
+		return
+	}
+	var newProduct Product
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&newProduct)
+
+	if err != nil {
+		fmt.Println("error in post product", err)
+		http.Error(w, "Please give me a valid json", 400)
+		return
+	}
+
+	newProduct.ID = len(productList) + 1
+
+	productList = append(productList, newProduct)
+	sendData(w, newProduct, 201)
+}
 
 func main() {
 	mux := http.NewServeMux()
@@ -47,6 +89,7 @@ func main() {
 	mux.HandleFunc("/", helloHandler)
 	mux.HandleFunc("/about", aboutHadnler)
 	mux.HandleFunc("/products", getProducts)
+	mux.HandleFunc("/create-products", createProduct)
 
 	fmt.Println("Server running on Server : 3000")
 
