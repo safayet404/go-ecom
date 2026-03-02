@@ -1,11 +1,11 @@
 package product
 
 type Product struct {
-	ID          int     `json:"id"`
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	ImgUrl      string  `json:"imageUrl"`
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Price       string `json:"price"`
+	ImgUrl      string `json:"imageUrl"`
 }
 
 func init() {
@@ -13,7 +13,7 @@ func init() {
 		ID:          1,
 		Title:       "Orange",
 		Description: "This is orage fruit",
-		Price:       123.45,
+		Price:       "123.45",
 		ImgUrl:      "dole.com/sites/default/files/mdedia/2025-01/orange.png",
 	}
 
@@ -21,14 +21,14 @@ func init() {
 		ID:          2,
 		Title:       "Apple",
 		Description: "This is orage fruit",
-		Price:       123.45,
+		Price:       "123.45",
 		ImgUrl:      "dole.com/sites/default/files/mdedia/2025-01/orange.png",
 	}
 	prd3 := Product{
 		ID:          3,
 		Title:       "Banana",
 		Description: "This is orage fruit",
-		Price:       123.45,
+		Price:       "123.45",
 		ImgUrl:      "dole.com/sites/default/files/mdedia/2025-01/orange.png",
 	}
 
