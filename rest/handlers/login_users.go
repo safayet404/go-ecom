@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"ecommerce/config"
 	"ecommerce/database"
 	"ecommerce/util"
 	"encoding/json"
@@ -32,6 +33,20 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.SendData(w, user, 200)
+	cnf := config.GetConfig()
+
+	accessToken, err := util.CreateJwt(cnf.JwtSecretKey, util.Payload{
+		Sub:         user.ID,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Email:       user.Email,
+		IsShowOwner: user.IsShopOwner,
+	})
+
+	if err != nil {
+		http.Error(w, "Internal Server error", 500)
+	}
+
+	util.SendData(w, accessToken, 200)
 
 }
