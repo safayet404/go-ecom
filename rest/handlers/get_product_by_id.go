@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"ecommerce/product"
+	"ecommerce/database"
 	"ecommerce/util"
 	"net/http"
 	"strconv"
@@ -17,12 +17,12 @@ func GetProductByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, product := range product.ProductList {
-		if product.ID == id {
-			util.SendData(w, product, 200)
-			return
-		}
+	product := database.Get(id)
+
+	if product == nil {
+		util.SendError(w, 404, "product not found bhai")
+		return
 	}
 
-	util.SendData(w, "Product pai nai bhai bisshas koren", 404)
+	util.SendData(w, product, 200)
 }
