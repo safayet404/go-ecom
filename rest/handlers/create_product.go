@@ -3,6 +3,7 @@ package handlers
 import (
 	"ecommerce/database"
 	"ecommerce/util"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -24,4 +25,8 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 	createdProduct := database.Store(newProduct)
 
 	util.SendData(w, createdProduct, 201)
+}
+
+func base64UrlEncode(data []byte) string {
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }
