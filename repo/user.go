@@ -12,6 +12,7 @@ type User struct {
 type UserRepo interface {
 	Create(u User) (*User, error)
 	Get(userID int) (*User, error)
+	Find(email, pass string) (*User, error)
 	List() ([]*User, error)
 	Delete(userID int) error
 	Update(p User) (*User, error)
@@ -69,6 +70,17 @@ func (r *userRepo) Update(user User) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+func (r *userRepo) Find(email, pass string) (*User, error) {
+	for _, u := range r.userList {
+		if u.Email == email && u.Password == pass {
+			return u, nil
+		}
+	}
+
+	return nil, nil
+
 }
 
 func generateInitialUser(r *userRepo) {
