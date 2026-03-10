@@ -42,12 +42,16 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	newProduct.ID = id
 
-	h.productRepo.Update(repo.Product{
+	_, err = h.productRepo.Update(repo.Product{
 		Title:       newProduct.Title,
 		Description: newProduct.Description,
 		Price:       newProduct.Price,
 		ImgUrl:      newProduct.ImgUrl,
 	})
+
+	if err != nil {
+		util.SendError(w, http.StatusInternalServerError, "interneal server error")
+	}
 
 	util.SendData(w, "Successfully updated product", 201)
 
